@@ -13,6 +13,8 @@ Open the local URL printed by Vite. Use **Models** to set an OpenAI-compatible A
 
 The sample book shows how replies and new paragraphs appear in the workspace. Open **Book library** in the Contents header to create your own book. **Edit chapter** lets you revise the draft, and **Export** downloads the manuscript as Markdown.
 
+The speaker button reads the current chapter. Use **Choose voice** beside it to select a voice. If your Linux browser exposes no on-device voices, Bookvibe uses the local Speech Dispatcher service through its Python 3 bindings. Run the Bookvibe server in your desktop session for this fallback.
+
 Books, conversation history, and model URLs and IDs are saved in the browser. API keys stay in the browser tab’s session storage. Both selected providers receive the full conversation and current manuscript, so long books need models with larger context windows.
 
 ## Verify and preview
