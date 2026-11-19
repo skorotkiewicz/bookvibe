@@ -1,5 +1,6 @@
 <script>
   import { tick } from 'svelte'
+  import ChapterReadAloud from './lib/ChapterReadAloud.svelte'
   import Icon from './lib/Icon.svelte'
   import ModelSettings from './lib/ModelSettings.svelte'
   import { bookMarkdown, countWords, loadBooks, loadSettings, newBook, saveBooks, saveSettings } from './lib/books.js'
@@ -315,6 +316,9 @@
         <span class="panel-title"><Icon name="book" size={17} /> Manuscript</span>
         <div class="panel-actions">
           {#if !editing}
+            {#key chapter.id}
+              <ChapterReadAloud text={chapter.text} />
+            {/key}
             <button class="ghost-btn edit-button" type="button" onclick={startEditing} disabled={busy}><Icon name="edit" size={15} /> Edit chapter</button>
           {/if}
           <button class="icon-btn focus-button" class:chosen={focus} type="button" aria-pressed={focus} aria-label="Focus mode" title="Focus mode" onclick={() => focus = !focus}><Icon name="focus" size={17} /></button>

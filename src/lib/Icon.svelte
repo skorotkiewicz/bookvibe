@@ -27,6 +27,10 @@
     <path d="M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5"/>
   {:else if name === 'edit'}
     <path d="m14 5 5 5M5 19l1-5L17 3l4 4-11 11-5 1Z"/>
+  {:else if name === 'volume'}
+    <path d="M3 9h4l5-4v14l-5-4H3Zm13 0a4.2 4.2 0 0 1 0 6m3-9a8.5 8.5 0 0 1 0 12"/>
+  {:else if name === 'stop'}
+    <rect x="6" y="6" width="12" height="12" rx="2"/>
   {:else if name === 'chat'}
     <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.4-3.6A7.5 7.5 0 1 1 20 11.5Z"/><path d="M9 11.5h7"/>
   {:else if name === 'spark'}
