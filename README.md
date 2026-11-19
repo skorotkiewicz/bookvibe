@@ -2,6 +2,10 @@
 
 Bookvibe turns a conversation into a manuscript. Each message in **Chat & draft** gets a conversational reply and adds new paragraphs to the selected chapter. **Chat only** lets you discuss the book or ask about connections and open threads.
 
+<p align="center">
+  <a href="assets/bookvibe-desktop.png"><img src="assets/bookvibe-desktop.png" alt="Bookvibe desktop workspace with chapters, manuscript, and story chat" width="640"></a>
+</p>
+
 ## Run locally
 
 ```sh
