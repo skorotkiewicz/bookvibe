@@ -484,13 +484,9 @@ button.draft-note:hover:not(:disabled) { background: #2b372d; border-color: #535
   .prose { font-size: 18px; }
 }
 
-@media (min-width: 791px) and (max-width: 945px), (max-width: 430px) {
-  .manuscript-header .edit-button { width: 33px; padding: 0; }
-  .manuscript-header .edit-button span { display: none; }
-}
-
-@media (min-width: 791px) and (max-width: 855px) {
+@media (min-width: 791px) and (max-width: 850px) {
   .manuscript-header .panel-title svg { display: none; }
+  .manuscript-header .panel-actions { gap: 0; }
 }
 
 @media (max-width: 790px) {

@@ -7,6 +7,8 @@
   const voicePreference = 'bookvibe.voice.v1'
   let voices = $state.raw([])
   let voiceId = $state(loadVoice())
+  let pickerOpen = $state(false)
+  let pickerButton
   let current
   let reading = $state(false)
   let error = $state('')
@@ -35,6 +37,20 @@
     voices = synth.getVoices().filter(voice => voice.localService)
   }
 
+  function togglePicker() {
+    pickerOpen = !pickerOpen
+    if (pickerOpen) {
+      error = ''
+      refreshVoices()
+    }
+  }
+
+  function dismissPicker(event) {
+    if (event.key !== 'Escape' || !pickerOpen) return
+    pickerOpen = false
+    if (document.activeElement?.id === 'read-aloud-voice') pickerButton?.focus()
+  }
+
   function chooseVoice(event) {
     voiceId = event.currentTarget.value
     try {
@@ -58,6 +74,7 @@
     }
 
     error = ''
+    pickerOpen = false
     refreshVoices()
     const voice = voices.find(item => voiceId && item.voiceURI === voiceId)
       ?? voices.find(item => item.default)
@@ -103,40 +120,42 @@
   }
 </script>
 
-<svelte:window onpagehide={stop} />
+<svelte:window onpagehide={stop} onkeydown={dismissPicker} />
 
 <button class="icon-btn" class:chosen={reading} type="button" aria-label={label}
   title={supported ? label : 'Read aloud is unavailable in this browser'}
   disabled={!supported || !text.trim()} onclick={toggle}>
   <Icon name={reading ? 'stop' : 'volume'} size={17} />
 </button>
-<select class="voice-picker" aria-label="Read-aloud voice" title="Read-aloud voice"
-  value={voices.some(voice => voice.voiceURI === voiceId) ? voiceId : ''}
-  disabled={!voices.length} onchange={chooseVoice}>
-  <option value="">Default</option>
-  {#each voices as voice}
-    <option value={voice.voiceURI}>{voice.name} ({voice.lang})</option>
-  {/each}
-</select>
+<button bind:this={pickerButton} class="icon-btn voice-picker" class:chosen={pickerOpen} type="button"
+  aria-label="Choose voice" aria-expanded={pickerOpen} aria-controls="read-aloud-voice-options"
+  title="Choose voice" disabled={!supported} onclick={togglePicker}>
+  <Icon name="down" size={13} />
+</button>
+{#if pickerOpen}
+  <div class="voice-options" id="read-aloud-voice-options">
+    <label>
+      Voice
+      <select id="read-aloud-voice" value={voices.some(voice => voice.voiceURI === voiceId) ? voiceId : ''}
+        disabled={!voices.length} onchange={chooseVoice}>
+        <option value="">System default</option>
+        {#each voices as voice}
+          <option value={voice.voiceURI}>{voice.name} ({voice.lang})</option>
+        {/each}
+      </select>
+    </label>
+    {#if !voices.length}<p role="status">No system voice is available.</p>{/if}
+  </div>
+{/if}
 {#if error}<p class="speech-error" role="status">{error}</p>{/if}
 
 <style>
   .voice-picker {
-    width: 124px;
-    height: 34px;
-    padding-inline: 7px 4px;
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: var(--chrome);
-    color: var(--muted);
-    font: inherit;
+    width: 24px;
+    margin-inline-start: -4px;
   }
 
-  @media (min-width: 791px) and (max-width: 855px), (max-width: 430px) {
-    .voice-picker { width: 90px; }
-  }
-
-  .speech-error {
+  .voice-options, .speech-error {
     position: absolute;
     z-index: 1;
     top: calc(100% + 6px);
@@ -146,7 +165,25 @@
     border: 1px solid var(--line);
     border-radius: 7px;
     background: var(--surface);
-    color: var(--accent-strong);
     white-space: normal;
   }
+
+  .voice-options {
+    width: 260px;
+    padding: 10px;
+  }
+
+  .voice-options label { display: grid; gap: 5px; }
+
+  .voice-options select {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px;
+    background: var(--chrome);
+    color: var(--text);
+  }
+
+  .voice-options p { margin-top: 6px; color: var(--muted); }
+  .speech-error { color: var(--accent-strong); }
 </style>
