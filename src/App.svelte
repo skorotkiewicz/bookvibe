@@ -319,7 +319,7 @@
             {#key chapter.id}
               <ChapterReadAloud text={chapter.text} />
             {/key}
-            <button class="ghost-btn edit-button" type="button" onclick={startEditing} disabled={busy}><Icon name="edit" size={15} /> Edit chapter</button>
+            <button class="ghost-btn edit-button" type="button" aria-label="Edit chapter" title="Edit chapter" onclick={startEditing} disabled={busy}><Icon name="edit" size={15} /> <span>Edit chapter</span></button>
           {/if}
           <button class="icon-btn focus-button" class:chosen={focus} type="button" aria-pressed={focus} aria-label="Focus mode" title="Focus mode" onclick={() => focus = !focus}><Icon name="focus" size={17} /></button>
         </div>

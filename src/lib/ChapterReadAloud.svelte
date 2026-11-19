@@ -4,15 +4,45 @@
   let { text } = $props()
   const synth = window.speechSynthesis
   const supported = Boolean(synth && window.SpeechSynthesisUtterance)
+  const voicePreference = 'bookvibe.voice.v1'
+  let voices = $state.raw([])
+  let voiceId = $state(loadVoice())
   let current
   let reading = $state(false)
   let error = $state('')
   let label = $derived(reading ? 'Stop reading' : 'Read aloud')
 
   $effect(() => {
-    if (supported) synth.getVoices()
-    return stop
+    if (supported) {
+      refreshVoices()
+      synth.addEventListener('voiceschanged', refreshVoices)
+    }
+    return () => {
+      if (supported) synth.removeEventListener('voiceschanged', refreshVoices)
+      stop()
+    }
   })
+
+  function loadVoice() {
+    try {
+      return localStorage.getItem(voicePreference) ?? ''
+    } catch {
+      return ''
+    }
+  }
+
+  function refreshVoices() {
+    voices = synth.getVoices().filter(voice => voice.localService)
+  }
+
+  function chooseVoice(event) {
+    voiceId = event.currentTarget.value
+    try {
+      localStorage.setItem(voicePreference, voiceId)
+    } catch {
+      // The selected voice is still available for this chapter.
+    }
+  }
 
   function stop() {
     if (!current) return
@@ -28,8 +58,11 @@
     }
 
     error = ''
-    const voices = synth.getVoices().filter(voice => voice.localService)
-    const voice = voices.find(item => item.default) ?? voices.find(item => item.lang === navigator.language) ?? voices[0]
+    refreshVoices()
+    const voice = voices.find(item => voiceId && item.voiceURI === voiceId)
+      ?? voices.find(item => item.default)
+      ?? voices.find(item => item.lang === navigator.language)
+      ?? voices[0]
     if (!voice) {
       error = 'No system voice is available.'
       return
@@ -77,9 +110,32 @@
   disabled={!supported || !text.trim()} onclick={toggle}>
   <Icon name={reading ? 'stop' : 'volume'} size={17} />
 </button>
+<select class="voice-picker" aria-label="Read-aloud voice" title="Read-aloud voice"
+  value={voices.some(voice => voice.voiceURI === voiceId) ? voiceId : ''}
+  disabled={!voices.length} onchange={chooseVoice}>
+  <option value="">Default</option>
+  {#each voices as voice}
+    <option value={voice.voiceURI}>{voice.name} ({voice.lang})</option>
+  {/each}
+</select>
 {#if error}<p class="speech-error" role="status">{error}</p>{/if}
 
 <style>
+  .voice-picker {
+    width: 124px;
+    height: 34px;
+    padding-inline: 7px 4px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--chrome);
+    color: var(--muted);
+    font: inherit;
+  }
+
+  @media (min-width: 791px) and (max-width: 855px), (max-width: 430px) {
+    .voice-picker { width: 90px; }
+  }
+
   .speech-error {
     position: absolute;
     z-index: 1;
